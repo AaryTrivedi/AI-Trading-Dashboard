@@ -10,6 +10,10 @@ const envSchema = z.object({
   AUTH0_AUDIENCE: z.string().min(1, 'AUTH0_AUDIENCE is required'),
   AUTH0_ISSUER_BASE_URL: z.string().url('AUTH0_ISSUER_BASE_URL must be a valid URL'),
   AUTH0_TOKEN_SIGNING_ALG: z.enum(['RS256', 'HS256']).default('RS256'),
+  // Massive.com (formerly Polygon) - required when NEWS_PROVIDER or STOCK_DATA_PROVIDER is 'massive'
+  MASSIVE_API_KEY: z.string().min(1).optional(),
+  NEWS_PROVIDER: z.enum(['massive']).default('massive'),
+  STOCK_DATA_PROVIDER: z.enum(['massive']).default('massive'),
 });
 
 export type Env = z.infer<typeof envSchema>;
