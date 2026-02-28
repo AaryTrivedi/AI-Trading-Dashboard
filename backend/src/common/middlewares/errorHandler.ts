@@ -1,6 +1,11 @@
 import type { Request, Response, NextFunction } from 'express';
+import { UnauthorizedError } from 'express-oauth2-jwt-bearer';
 import { AppError } from '../errors/AppError.js';
 import { logger } from '../../config/logger.js';
+
+function isUnauthorizedError(err: unknown): err is UnauthorizedError {
+  return err instanceof Error && 'statusCode' in err && (err as UnauthorizedError).statusCode === 401;
+}
 
 export function errorHandler(
   err: unknown,
@@ -14,6 +19,16 @@ export function errorHandler(
         code: err.code,
         message: err.message,
         ...(err.details != null && typeof err.details === 'object' && { details: err.details }),
+      },
+    });
+    return;
+  }
+
+  if (isUnauthorizedError(err)) {
+    res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: err.message ?? 'Invalid or missing token',
       },
     });
     return;

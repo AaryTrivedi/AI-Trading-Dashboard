@@ -6,8 +6,10 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3001),
   MONGODB_URI: z.string().url().or(z.literal('')),
   CORS_ORIGINS: z.string().default('*'),
-  JWT_SECRET: z.string().default('dev-secret-change-in-production'),
-  JWT_EXPIRES_IN: z.string().default('7d'),
+  // Auth0 (for express-oauth2-jwt-bearer)
+  AUTH0_AUDIENCE: z.string().min(1, 'AUTH0_AUDIENCE is required'),
+  AUTH0_ISSUER_BASE_URL: z.string().url('AUTH0_ISSUER_BASE_URL must be a valid URL'),
+  AUTH0_TOKEN_SIGNING_ALG: z.enum(['RS256', 'HS256']).default('RS256'),
 });
 
 export type Env = z.infer<typeof envSchema>;

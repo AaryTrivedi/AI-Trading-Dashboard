@@ -1,38 +1,35 @@
 import type { Request, Response, NextFunction } from 'express';
-import { AppError } from '../../common/errors/AppError.js';
+import { auth0Jwt } from '../../config/auth0.js';
 
-/** Placeholder: extend Request with user after JWT verification */
+/** Request with userId set after Auth0 JWT validation (auth is set by express-oauth2-jwt-bearer on Request) */
 export interface AuthenticatedRequest extends Request {
   userId?: string;
 }
 
 /**
- * JWT auth middleware for REST.
- * Verify Authorization: Bearer <token> and set req.userId.
- * TODO: integrate jsonwebtoken or jose, validate against env.JWT_SECRET.
+ * JWT auth middleware for REST: validates Auth0 access token and sets req.userId from payload.sub.
+ * Use on routes that require authentication.
  */
-export function authHttp(req: AuthenticatedRequest, _res: Response, next: NextFunction): void {
-  const auth = req.headers.authorization;
-  if (!auth?.startsWith('Bearer ')) {
-    next(AppError.unauthorized('Missing or invalid Authorization header'));
-    return;
-  }
-  const token = auth.slice(7);
-  // TODO: verify JWT and set req.userId
-  if (!token) {
-    next(AppError.unauthorized('Invalid token'));
-    return;
-  }
-  (req as AuthenticatedRequest).userId = 'placeholder-user-id';
-  next();
+export function authHttp(req: Request, res: Response, next: NextFunction): void {
+  auth0Jwt(req, res, (err?: unknown) => {
+    if (err) return next(err);
+    const sub = req.auth?.payload?.sub;
+    if (sub) (req as AuthenticatedRequest).userId = sub;
+    next();
+  });
 }
 
-/** Optional auth: set userId if valid token present, otherwise continue without it */
-export function optionalAuthHttp(req: AuthenticatedRequest, _res: Response, next: NextFunction): void {
+/**
+ * Optional auth: validates token if present and sets req.userId; does not require a token.
+ * If no Authorization header, continues without userId. If token is invalid, still returns 401.
+ */
+export function optionalAuthHttp(req: Request, res: Response, next: NextFunction): void {
   const auth = req.headers.authorization;
-  if (auth?.startsWith('Bearer ')) {
-    const token = auth.slice(7);
-    if (token) (req as AuthenticatedRequest).userId = 'placeholder-user-id';
-  }
-  next();
+  if (!auth?.startsWith('Bearer ')) return next();
+  auth0Jwt(req, res, (err?: unknown) => {
+    if (err) return next(err);
+    const sub = req.auth?.payload?.sub;
+    if (sub) (req as AuthenticatedRequest).userId = sub;
+    next();
+  });
 }
