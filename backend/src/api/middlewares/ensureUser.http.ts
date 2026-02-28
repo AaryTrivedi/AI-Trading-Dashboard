@@ -30,8 +30,6 @@ export async function ensureUserInDb(
     return;
   }
 
-  console.log(authReq.auth)
-
   const payload = (authReq.auth?.payload ?? {}) as Auth0Payload;
   const email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : '';
   const name = typeof payload.name === 'string' ? payload.name : undefined;
