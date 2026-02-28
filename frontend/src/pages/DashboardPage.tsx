@@ -1,3 +1,5 @@
+import { AuthStatus } from '../components/AuthStatus'
+
 export function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16 lg:px-8">
@@ -7,6 +9,9 @@ export function DashboardPage() {
       <p className="mt-4 text-muted">
         Your dashboard will appear here.
       </p>
+      <div className="mt-10 max-w-xl">
+        <AuthStatus />
+      </div>
     </div>
   )
 }
