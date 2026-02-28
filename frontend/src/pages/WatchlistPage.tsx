@@ -170,7 +170,7 @@ export function WatchlistPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Link
-                        to="/dashboard"
+                        to={`/stock/${item.ticker}`}
                         className="text-sm text-primary hover:underline"
                       >
                         View

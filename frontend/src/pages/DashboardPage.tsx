@@ -85,6 +85,12 @@ export function DashboardPage() {
                       Updated {new Date(item.priceTimestamp).toLocaleString()}
                     </p>
                   )}
+                  <Link
+                    to={`/stock/${item.ticker}`}
+                    className="mt-3 inline-block text-sm text-primary hover:underline"
+                  >
+                    View →
+                  </Link>
                 </div>
               ))}
             </div>

@@ -6,6 +6,7 @@ import { Layout } from './components/layout/Layout'
 import { LandingPage } from './pages/LandingPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { WatchlistPage } from './pages/WatchlistPage'
+import { StockPage } from './pages/StockPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import './App.css'
 
@@ -23,6 +24,7 @@ function App() {
         <Route index element={<LandingPage />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="watchlist" element={<WatchlistPage />} />
+        <Route path="stock/:ticker" element={<StockPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
