@@ -21,7 +21,7 @@ export function DashboardPage() {
     fetchDashboardWatchlist()
       .then(setItems)
       .catch((err) => {
-        setError(err.response?.data?.error ?? err.message ?? 'Failed to load watchlist')
+        setError(err.response?.data?.error?.message ?? err.message ?? 'Failed to load watchlist')
         setItems([])
       })
       .finally(() => setLoading(false))
