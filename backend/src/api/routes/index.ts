@@ -1,5 +1,7 @@
 import type { Router } from 'express';
+import { asyncHandler } from '../../common/utils/asyncHandler.js';
 import { authHttp, type AuthenticatedRequest } from '../middlewares/auth.http.js';
+import { ensureUserInDb } from '../middlewares/ensureUser.http.js';
 
 /**
  * Mount all API route modules here.
@@ -10,10 +12,14 @@ export function registerRoutes(router: Router): void {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  /** Protected example: requires Auth0 JWT; returns current user id from token */
-  router.get('/me', authHttp, (req, res) => {
-    const userId = (req as AuthenticatedRequest).userId;
-    res.json({ userId });
+  /** Protected: requires Auth0 JWT; ensures user exists in DB; returns Auth0 sub and DB user id */
+  router.get('/me', authHttp, asyncHandler(ensureUserInDb), (req, res) => {
+    const { userId, dbUser } = req as AuthenticatedRequest;
+    res.json({
+      userId: userId ?? undefined,
+      dbUserId: dbUser?._id?.toString(),
+      email: dbUser?.email,
+    });
   });
 
   // router.use('/auth', authRoutes);

@@ -1,9 +1,12 @@
 import type { Request, Response, NextFunction } from 'express';
 import { auth0Jwt } from '../../config/auth0.js';
+import type { IUser } from '../../models/User.js';
 
 /** Request with userId set after Auth0 JWT validation (auth is set by express-oauth2-jwt-bearer on Request) */
 export interface AuthenticatedRequest extends Request {
   userId?: string;
+  /** Set by ensureUserInDb after syncing Auth0 user to DB */
+  dbUser?: IUser;
 }
 
 /**
