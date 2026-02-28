@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import { AuthButton } from './components/AuthButton'
 import './App.css'
 
 function App() {
@@ -8,6 +9,9 @@ function App() {
 
   return (
     <>
+      <header className="flex justify-end p-4 border-b border-gray-200">
+        <AuthButton />
+      </header>
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
