@@ -1,5 +1,6 @@
 import type { Router } from 'express';
 import { authHttp, type AuthenticatedRequest } from '../middlewares/auth.http.js';
+import { ensureUserInDb } from '../middlewares/ensureUser.http.js';
 import { registerNewsRoutes } from './news.js';
 import { registerTickerRoutes } from './tickers.js';
 import { registerWatchlistRoutes } from './watchlist.js';
@@ -13,11 +14,20 @@ export function registerRoutes(router: Router): void {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  /** Protected: requires Auth0 JWT; returns Auth0 sub (ensureUserInDb disabled for now) */
-  router.get('/me', authHttp, (req, res) => {
-    const { userId } = req as AuthenticatedRequest;
+  /** Protected: requires Auth0 JWT + user in DB */
+  router.get('/me', authHttp, ensureUserInDb, (req, res) => {
+    const authReq = req as AuthenticatedRequest;
+    const dbUser = authReq.dbUser;
     res.json({
-      userId: userId ?? undefined,
+      userId: authReq.userId ?? undefined,
+      ...(dbUser && {
+        dbUser: {
+          id: dbUser._id.toString(),
+          email: dbUser.email,
+          name: dbUser.name,
+          picture: dbUser.picture,
+        },
+      }),
     });
   });
 

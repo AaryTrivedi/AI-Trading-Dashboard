@@ -2,6 +2,7 @@ import type { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../../common/utils/asyncHandler.js';
 import { authHttp } from '../middlewares/auth.http.js';
+import { ensureUserInDb } from '../middlewares/ensureUser.http.js';
 import { validate } from '../middlewares/validate.http.js';
 import * as watchlistController from '../controllers/watchlist.controller.js';
 
@@ -20,7 +21,7 @@ const listQuerySchema = z.object({
 });
 
 export function registerWatchlistRoutes(router: Router): void {
-  const protected_ = [authHttp];
+  const protected_ = [authHttp, ensureUserInDb];
 
   router.get(
     '/watchlists',
