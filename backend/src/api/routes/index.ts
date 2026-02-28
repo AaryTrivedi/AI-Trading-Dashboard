@@ -2,6 +2,7 @@ import type { Router } from 'express';
 import { authHttp, type AuthenticatedRequest } from '../middlewares/auth.http.js';
 import { ensureUserInDb } from '../middlewares/ensureUser.http.js';
 import { registerNewsRoutes } from './news.js';
+import { registerStockRoutes } from './stock.js';
 import { registerTickerRoutes } from './tickers.js';
 import { registerWatchlistRoutes } from './watchlist.js';
 
@@ -32,6 +33,7 @@ export function registerRoutes(router: Router): void {
   });
 
   registerNewsRoutes(router);
+  registerStockRoutes(router);
   registerTickerRoutes(router);
   registerWatchlistRoutes(router);
 }
