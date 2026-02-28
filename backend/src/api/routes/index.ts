@@ -3,6 +3,7 @@ import { asyncHandler } from '../../common/utils/asyncHandler.js';
 import { authHttp, type AuthenticatedRequest } from '../middlewares/auth.http.js';
 import { ensureUserInDb } from '../middlewares/ensureUser.http.js';
 import { registerNewsRoutes } from './news.js';
+import { registerWatchlistRoutes } from './watchlist.js';
 
 /**
  * Mount all API route modules here.
@@ -24,7 +25,5 @@ export function registerRoutes(router: Router): void {
   });
 
   registerNewsRoutes(router);
-
-  // router.use('/auth', authRoutes);
-  // router.use('/watchlist', watchlistRoutes);
+  registerWatchlistRoutes(router);
 }
