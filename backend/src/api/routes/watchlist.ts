@@ -31,6 +31,12 @@ export function registerWatchlistRoutes(router: Router): void {
   );
 
   router.get(
+    '/watchlists/dashboard',
+    protected_,
+    asyncHandler(watchlistController.listWatchlistForDashboard)
+  );
+
+  router.get(
     '/watchlists/:id',
     protected_,
     asyncHandler(watchlistController.getWatchlistById)

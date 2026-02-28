@@ -1,7 +1,16 @@
 import type { Response } from 'express';
 import { watchlistService } from '../../services/WatchlistService.js';
+import { stockDataProvider } from '../../providers/index.js';
 import type { ListWatchlistFilter, ListWatchlistOptions } from '../../repositories/WatchlistRepository.js';
 import type { AuthenticatedRequest } from '../middlewares/auth.http.js';
+
+export interface WatchlistItemWithQuote {
+  id: string;
+  ticker: string;
+  createdAt: string;
+  price?: number;
+  priceTimestamp?: string;
+}
 
 export interface ListWatchlistQuery {
   ticker?: string;
@@ -32,6 +41,36 @@ export async function listWatchlist(
     limit: options.limit,
     offset: options.offset,
   });
+}
+
+export async function listWatchlistForDashboard(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  const dbUser = req.dbUser;
+  if (!dbUser) {
+    res.status(401).json({ error: 'User not found' });
+    return;
+  }
+
+  const filter: ListWatchlistFilter = { userId: dbUser._id };
+  const options: ListWatchlistOptions = { limit: 50, offset: 0 };
+  const result = await watchlistService.list(filter, options);
+
+  const items: WatchlistItemWithQuote[] = await Promise.all(
+    result.items.map(async (item) => {
+      const quote = await stockDataProvider.getLastQuote(item.ticker);
+      return {
+        id: item._id.toString(),
+        ticker: item.ticker,
+        createdAt: item.createdAt.toISOString(),
+        price: quote?.price,
+        priceTimestamp: quote?.timestamp?.toISOString(),
+      };
+    })
+  );
+
+  res.json({ items });
 }
 
 export async function getWatchlistById(
