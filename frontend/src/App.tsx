@@ -2,8 +2,10 @@ import { useEffect } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { Routes, Route } from 'react-router-dom'
 import { setAccessTokenGetter, setOnUnauthorized } from './api'
-import { AuthButton } from './components/AuthButton'
-import { HomePage } from './pages/HomePage'
+import { Layout } from './components/layout/Layout'
+import { LandingPage } from './pages/LandingPage'
+import { DashboardPage } from './pages/DashboardPage'
+import { WatchlistPage } from './pages/WatchlistPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import './App.css'
 
@@ -16,17 +18,14 @@ function App() {
   }, [getAccessTokenSilently, loginWithRedirect])
 
   return (
-    <>
-      <header className="flex justify-end p-4 border-b border-gray-200">
-        <AuthButton />
-      </header>
-      <main>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
-    </>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<LandingPage />} />
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="watchlist" element={<WatchlistPage />} />
+      </Route>
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   )
 }
 
