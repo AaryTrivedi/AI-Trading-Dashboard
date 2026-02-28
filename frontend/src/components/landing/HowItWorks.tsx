@@ -4,7 +4,7 @@ const steps = [
     description: 'Select stocks you care about.',
     icon: (
       <svg
-        className="h-8 w-8 text-indigo-600"
+        className="h-8 w-8 text-primary"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -24,7 +24,7 @@ const steps = [
       'We track news, unusual trades, and key impact vectors.',
     icon: (
       <svg
-        className="h-8 w-8 text-indigo-600"
+        className="h-8 w-8 text-primary"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -43,7 +43,7 @@ const steps = [
     description: 'Get notified when something important happens.',
     icon: (
       <svg
-        className="h-8 w-8 text-indigo-600"
+        className="h-8 w-8 text-primary"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -66,22 +66,22 @@ export function HowItWorks() {
       className="px-6 py-20 lg:py-28"
     >
       <div className="mx-auto max-w-6xl">
-        <h2 className="text-center text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+        <h2 className="text-center text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           How It Works
         </h2>
         <div className="mt-16 grid gap-8 sm:grid-cols-3">
           {steps.map((step) => (
             <div
               key={step.title}
-              className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md hover:border-slate-300"
+              className="rounded-2xl border border-border bg-surface p-8 shadow-sm transition hover:shadow-md hover:border-border-hover"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-muted">
                 {step.icon}
               </div>
-              <h3 className="mt-6 text-lg font-semibold text-slate-900">
+              <h3 className="mt-6 text-lg font-semibold text-foreground">
                 {step.title}
               </h3>
-              <p className="mt-2 text-slate-600">{step.description}</p>
+              <p className="mt-2 text-muted">{step.description}</p>
             </div>
           ))}
         </div>

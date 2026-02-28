@@ -5,19 +5,19 @@ export function AuthButton() {
 
   if (isLoading) {
     return (
-      <div className="text-sm text-gray-500">Loading...</div>
+      <div className="text-sm text-muted">Loading...</div>
     )
   }
 
   if (isAuthenticated && user) {
     return (
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-700">
+        <span className="text-sm text-foreground">
           Welcome, <span className="font-medium">{user.name ?? user.email}</span>
         </span>
         <button
           onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-          className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+          className="px-4 py-2 text-sm font-medium text-white bg-error rounded-lg hover:bg-error-hover transition-colors"
         >
           Logout
         </button>
@@ -28,7 +28,7 @@ export function AuthButton() {
   return (
     <button
       onClick={() => loginWithRedirect()}
-      className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+      className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors"
     >
       Login
     </button>
