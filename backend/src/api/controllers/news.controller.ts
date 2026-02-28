@@ -17,6 +17,20 @@ export interface UpdateNewsBody extends UpdateNewsData {}
 
 export async function listNews(req: Request, res: Response): Promise<void> {
   const query = req.query as unknown as ListNewsQuery;
+  const tickers = query.tickers?.length ? query.tickers : undefined;
+  const useProvider = tickers != null && tickers.length > 0;
+
+  if (useProvider) {
+    const result = await newsService.listFromProvider(tickers, query.limit);
+    res.json({
+      items: result.items,
+      total: result.items.length,
+      limit: query.limit,
+      offset: 0,
+    });
+    return;
+  }
+
   const filter: ListNewsFilter = {
     tickers: query.tickers,
     publishedAfter: query.publishedAfter,
