@@ -3,6 +3,7 @@ import { asyncHandler } from '../../common/utils/asyncHandler.js';
 import { authHttp, type AuthenticatedRequest } from '../middlewares/auth.http.js';
 import { ensureUserInDb } from '../middlewares/ensureUser.http.js';
 import { registerNewsRoutes } from './news.js';
+import { registerTickerRoutes } from './tickers.js';
 import { registerWatchlistRoutes } from './watchlist.js';
 
 /**
@@ -25,5 +26,6 @@ export function registerRoutes(router: Router): void {
   });
 
   registerNewsRoutes(router);
+  registerTickerRoutes(router);
   registerWatchlistRoutes(router);
 }
