@@ -1,11 +1,20 @@
+import { useEffect } from 'react'
+import { useAuth0 } from '@auth0/auth0-react'
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import { setAccessTokenGetter, setOnUnauthorized } from './api'
 import { AuthButton } from './components/AuthButton'
 import './App.css'
 
 function App() {
+  const { getAccessTokenSilently, loginWithRedirect } = useAuth0()
   const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    setAccessTokenGetter(() => getAccessTokenSilently())
+    setOnUnauthorized(() => loginWithRedirect())
+  }, [getAccessTokenSilently, loginWithRedirect])
 
   return (
     <>
