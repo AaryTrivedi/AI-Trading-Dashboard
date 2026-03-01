@@ -23,6 +23,10 @@ function isTimeoutError(error: unknown): boolean {
   return error.message.toLowerCase().includes('timeout');
 }
 
+function isNoImpactResult(aiResult: AiImpactResult): boolean {
+  return aiResult.impact === 1;
+}
+
 function logItemEvent(params: {
   runId: string;
   url?: string;
@@ -31,6 +35,7 @@ function logItemEvent(params: {
   status: PipelineStatus;
   durationMs: number;
   error?: string;
+  reason?: string;
 }): void {
   pipelineLogger.info({
     runId: params.runId,
@@ -40,6 +45,7 @@ function logItemEvent(params: {
     status: params.status,
     duration_ms: params.durationMs,
     error: params.error,
+    reason: params.reason,
   });
 }
 
@@ -300,6 +306,24 @@ export async function runNewsImpactPipeline(): Promise<PipelineRunSummary> {
         });
 
         const storeStarted = Date.now();
+        if (isNoImpactResult(aiResult)) {
+          await Promise.all([
+            NewsImpactResult.deleteOne({ url_hash: item.urlHash }),
+            News.deleteOne({ url_hash: item.urlHash }),
+            NewsRawIngest.deleteOne({ url_hash: item.urlHash }),
+          ]);
+          logItemEvent({
+            runId,
+            url: item.url,
+            urlHash: item.urlHash,
+            stage: 'store',
+            status: 'skip',
+            durationMs: Date.now() - storeStarted,
+            reason: 'no_impact',
+          });
+          return;
+        }
+
         const storeRes = await NewsImpactResult.updateOne(
           { url_hash: item.urlHash },
           {
