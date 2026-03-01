@@ -418,25 +418,53 @@ export function StockPage() {
                   key={item._id}
                   className="rounded-xl border border-border bg-background p-4"
                 >
-                  <button
-                    onClick={() =>
-                      setExpandedNewsId(isExpanded ? null : item._id)
-                    }
-                    className="w-full text-left"
-                  >
-                    <p className="font-medium text-foreground">{item.headline}</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <span className="rounded bg-muted/30 px-2 py-0.5 text-xs text-muted">
-                        Impact: {impact}
-                      </span>
-                      <span className="rounded bg-muted/30 px-2 py-0.5 text-xs text-muted">
-                        {direction}
-                      </span>
-                      <span className="text-xs text-muted">
-                        {formatTimeAgo(item.publishedAt)}
-                      </span>
-                    </div>
-                  </button>
+                  <div className="flex items-start gap-2">
+                    <button
+                      onClick={() =>
+                        setExpandedNewsId(isExpanded ? null : item._id)
+                      }
+                      className="min-w-0 flex-1 text-left"
+                    >
+                      <p className="font-medium text-foreground">{item.headline}</p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <span className="rounded bg-muted/30 px-2 py-0.5 text-xs text-muted">
+                          Impact: {impact}
+                        </span>
+                        <span className="rounded bg-muted/30 px-2 py-0.5 text-xs text-muted">
+                          {direction}
+                        </span>
+                        <span className="text-xs text-muted">
+                          {formatTimeAgo(item.publishedAt)}
+                        </span>
+                      </div>
+                    </button>
+                    <a
+                      href={item.canonical_url || item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-0.5 shrink-0 rounded p-1.5 text-muted transition-colors hover:bg-muted/50 hover:text-foreground"
+                      title="Open article in new tab"
+                      aria-label="Open article in new tab"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden
+                      >
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                      </svg>
+                    </a>
+                  </div>
                   {isExpanded && item.points.length > 0 && (
                     <div className="mt-4 border-t border-border pt-4">
                       <p className="text-sm font-medium text-foreground">
