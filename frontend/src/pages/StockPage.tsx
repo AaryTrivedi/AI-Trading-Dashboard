@@ -121,11 +121,21 @@ export function StockPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [expandedNewsId, setExpandedNewsId] = useState<string | null>(null)
+  const [whatMovedItPage, setWhatMovedItPage] = useState(1)
+
+  const WHAT_MOVED_IT_PAGE_SIZE = 5
+  const whatMovedItTotalPages = Math.max(1, Math.ceil(news.length / WHAT_MOVED_IT_PAGE_SIZE))
+  const effectiveWhatMovedItPage = Math.min(whatMovedItPage, whatMovedItTotalPages)
+  const whatMovedItPaginated = news.slice(
+    (effectiveWhatMovedItPage - 1) * WHAT_MOVED_IT_PAGE_SIZE,
+    effectiveWhatMovedItPage * WHAT_MOVED_IT_PAGE_SIZE
+  )
 
   useEffect(() => {
     if (!ticker) return
     setLoading(true)
     setError(null)
+    setWhatMovedItPage(1)
     Promise.all([
       fetchStockOverview(ticker),
       fetchNewsByTicker(ticker, 8),
@@ -397,8 +407,9 @@ export function StockPage() {
         {news.length === 0 ? (
           <p className="mt-4 text-muted">No recent drivers in our database yet.</p>
         ) : (
-          <ul className="mt-4 space-y-3">
-            {news.map((item) => {
+          <>
+            <ul className="mt-4 space-y-3">
+              {whatMovedItPaginated.map((item) => {
               const isExpanded = expandedNewsId === item._id
               const impact = getImpactLabel(item.impact)
               const direction = IMPACT_DIRECTION[item.direction] ?? 'Neutral'
@@ -441,7 +452,43 @@ export function StockPage() {
                 </li>
               )
             })}
-          </ul>
+            </ul>
+            {whatMovedItTotalPages > 1 && (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+                <p className="text-sm text-muted">
+                  Showing {(effectiveWhatMovedItPage - 1) * WHAT_MOVED_IT_PAGE_SIZE + 1}–
+                  {Math.min(
+                    effectiveWhatMovedItPage * WHAT_MOVED_IT_PAGE_SIZE,
+                    news.length
+                  )}{' '}
+                  of {news.length}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setWhatMovedItPage((p) => Math.max(1, p - 1))}
+                    disabled={effectiveWhatMovedItPage <= 1}
+                    className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm text-muted">
+                    Page {effectiveWhatMovedItPage} of {whatMovedItTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setWhatMovedItPage((p) => Math.min(whatMovedItTotalPages, p + 1))
+                    }
+                    disabled={effectiveWhatMovedItPage >= whatMovedItTotalPages}
+                    className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </section>
 
