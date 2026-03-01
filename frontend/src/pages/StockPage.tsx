@@ -13,18 +13,17 @@ import { fetchStockOverview, type StockOverviewResponse } from '../api/stock'
 
 type ViewMode = 'simple' | 'advanced'
 
-const IMPACT_LABELS: Record<string, string> = {
-  none: 'Low',
-  low: 'Low',
-  med: 'Medium',
-  high: 'High',
-  very_high: 'High',
-}
-
 const IMPACT_DIRECTION: Record<string, 'Up' | 'Down' | 'Neutral'> = {
   positive: 'Up',
   negative: 'Down',
   mixed: 'Neutral',
+  unclear: 'Neutral',
+}
+
+function getImpactLabel(score: number): 'Low' | 'Medium' | 'High' {
+  if (score >= 8) return 'High'
+  if (score >= 5) return 'Medium'
+  return 'Low'
 }
 
 function formatTimeAgo(date: string): string {
@@ -102,8 +101,8 @@ function getNewsSentimentScore(news: NewsItem[]): number {
   if (!news.length) return 5
   let sum = 0
   for (const n of news) {
-    if (n.impactType === 'positive') sum += 7
-    else if (n.impactType === 'negative') sum += 3
+    if (n.direction === 'positive') sum += 7
+    else if (n.direction === 'negative') sum += 3
     else sum += 5
   }
   return Math.round(Math.min(10, Math.max(0, sum / news.length)))
@@ -193,8 +192,8 @@ export function StockPage() {
   const takeaway = getTakeaway(dailyChangePercent)
 
   const aiSummaryBullets = [
-    news.length > 0 && news[0].aiSummary
-      ? news[0].aiSummary
+    news.length > 0 && news[0].points.length > 0
+      ? news[0].points[0]
       : dailyChangePercent >= 0
         ? `The stock is up ${dailyChangePercent.toFixed(1)}% today. That usually means more buyers than sellers.`
         : `The stock is down ${Math.abs(dailyChangePercent).toFixed(1)}% today. That usually means more sellers than buyers.`,
@@ -401,8 +400,8 @@ export function StockPage() {
           <ul className="mt-4 space-y-3">
             {news.map((item) => {
               const isExpanded = expandedNewsId === item._id
-              const impact = IMPACT_LABELS[item.impactCategory] ?? 'Medium'
-              const direction = IMPACT_DIRECTION[item.impactType] ?? 'Neutral'
+              const impact = getImpactLabel(item.impact)
+              const direction = IMPACT_DIRECTION[item.direction] ?? 'Neutral'
               return (
                 <li
                   key={item._id}
@@ -414,7 +413,7 @@ export function StockPage() {
                     }
                     className="w-full text-left"
                   >
-                    <p className="font-medium text-foreground">{item.title}</p>
+                    <p className="font-medium text-foreground">{item.headline}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <span className="rounded bg-muted/30 px-2 py-0.5 text-xs text-muted">
                         Impact: {impact}
@@ -427,12 +426,16 @@ export function StockPage() {
                       </span>
                     </div>
                   </button>
-                  {isExpanded && item.aiSummary && (
+                  {isExpanded && item.points.length > 0 && (
                     <div className="mt-4 border-t border-border pt-4">
                       <p className="text-sm font-medium text-foreground">
                         Explain Like I&apos;m 15
                       </p>
-                      <p className="mt-1 text-sm text-muted">{item.aiSummary}</p>
+                      <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-muted">
+                        {item.points.map((point, idx) => (
+                          <li key={idx}>{point}</li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                 </li>

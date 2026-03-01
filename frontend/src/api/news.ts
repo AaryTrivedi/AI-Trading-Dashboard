@@ -2,14 +2,30 @@ import { createApiService } from './client'
 
 export interface NewsItem {
   _id: string
+  url_hash: string
   url: string
-  title: string
+  canonical_url: string
+  headline: string
   publishedAt: string
   source?: string
   tickers: string[]
-  aiSummary: string
-  impactCategory: string
-  impactType: string
+  impact: number
+  direction: 'positive' | 'negative' | 'mixed' | 'unclear'
+  category:
+    | 'EARNINGS'
+    | 'MERGER_ACQUISITION'
+    | 'REGULATORY_LEGAL'
+    | 'MACRO'
+    | 'ANALYST_RATING'
+    | 'PRODUCT'
+    | 'MANAGEMENT_CHANGE'
+    | 'SUPPLY_CHAIN'
+    | 'INSIDER_TRADING'
+    | 'OTHER'
+  points: string[]
+  confidence: number
+  model: string
+  prompt_version: string
 }
 
 export interface ListNewsResponse {

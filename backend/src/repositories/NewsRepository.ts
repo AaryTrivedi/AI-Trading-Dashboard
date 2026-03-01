@@ -13,14 +13,20 @@ export interface ListNewsOptions {
 }
 
 export interface CreateNewsData {
+  url_hash: string;
   url: string;
-  title: string;
+  canonical_url: string;
+  headline: string;
   publishedAt: Date;
   source?: string;
   tickers: string[];
-  aiSummary: string;
-  impactCategory: INews['impactCategory'];
-  impactType: INews['impactType'];
+  impact: number;
+  direction: INews['direction'];
+  category: INews['category'];
+  points: string[];
+  confidence: number;
+  model: string;
+  prompt_version: string;
   createdAt: Date;
 }
 

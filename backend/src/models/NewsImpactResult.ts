@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 export const IMPACT_DIRECTIONS = ['positive', 'negative', 'mixed', 'unclear'] as const;
-export const IMPACT_CATEGORIES = [
+export const IMPACT_AI_CATEGORIES = [
   'EARNINGS',
   'MERGER_ACQUISITION',
   'REGULATORY_LEGAL',
@@ -14,29 +14,26 @@ export const IMPACT_CATEGORIES = [
   'OTHER',
 ] as const;
 
-export type ImpactCategory = (typeof IMPACT_CATEGORIES)[number];
 export type ImpactDirection = (typeof IMPACT_DIRECTIONS)[number];
+export type ImpactAiCategory = (typeof IMPACT_AI_CATEGORIES)[number];
 
-export interface INews {
+export interface INewsImpactResult {
   _id: mongoose.Types.ObjectId;
   url_hash: string;
   url: string;
   canonical_url: string;
   headline: string;
-  publishedAt: Date;
-  source?: string;
-  tickers: string[];
   impact: number;
   direction: ImpactDirection;
-  category: ImpactCategory;
+  category: ImpactAiCategory;
   points: string[];
   confidence: number;
   model: string;
   prompt_version: string;
-  createdAt: Date;
+  created_at: Date;
 }
 
-const NewsSchema = new mongoose.Schema<INews>(
+const NewsImpactResultSchema = new mongoose.Schema<INewsImpactResult>(
   {
     url_hash: {
       type: String,
@@ -60,20 +57,6 @@ const NewsSchema = new mongoose.Schema<INews>(
       required: true,
       trim: true,
     },
-    publishedAt: {
-      type: Date,
-      required: true,
-      index: true,
-    },
-    source: {
-      type: String,
-      trim: true,
-    },
-    tickers: {
-      type: [String],
-      default: [],
-      index: true,
-    },
     impact: {
       type: Number,
       required: true,
@@ -88,7 +71,7 @@ const NewsSchema = new mongoose.Schema<INews>(
     category: {
       type: String,
       required: true,
-      enum: IMPACT_CATEGORIES,
+      enum: IMPACT_AI_CATEGORIES,
     },
     points: {
       type: [String],
@@ -111,16 +94,19 @@ const NewsSchema = new mongoose.Schema<INews>(
       required: true,
       trim: true,
     },
-    createdAt: {
+    created_at: {
       type: Date,
+      required: true,
       default: Date.now,
     },
   },
-  { timestamps: false }
+  {
+    collection: 'news_results',
+    versionKey: false,
+    timestamps: false,
+  }
 );
 
-NewsSchema.index({ url_hash: 1 }, { unique: true });
-NewsSchema.index({ tickers: 1 });
-NewsSchema.index({ publishedAt: -1 });
+NewsImpactResultSchema.index({ url_hash: 1 }, { unique: true });
 
-export const News = mongoose.model<INews>('News', NewsSchema);
+export const NewsImpactResult = mongoose.model<INewsImpactResult>('NewsImpactResult', NewsImpactResultSchema);

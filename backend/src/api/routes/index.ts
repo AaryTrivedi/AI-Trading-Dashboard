@@ -5,6 +5,7 @@ import { registerNewsRoutes } from './news.js';
 import { registerStockRoutes } from './stock.js';
 import { registerTickerRoutes } from './tickers.js';
 import { registerWatchlistRoutes } from './watchlist.js';
+import { registerPipelineRoutes } from './pipeline.js';
 
 /**
  * Mount all API route modules here.
@@ -33,6 +34,7 @@ export function registerRoutes(router: Router): void {
   });
 
   registerNewsRoutes(router);
+  registerPipelineRoutes(router);
   registerStockRoutes(router);
   registerTickerRoutes(router);
   registerWatchlistRoutes(router);

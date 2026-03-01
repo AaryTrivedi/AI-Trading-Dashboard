@@ -21,6 +21,20 @@ export async function listNews(req: Request, res: Response): Promise<void> {
   const useProvider = tickers != null && tickers.length > 0;
 
   if (useProvider) {
+    const stored = await newsService.list(
+      { tickers, publishedAfter: query.publishedAfter, publishedBefore: query.publishedBefore },
+      { limit: query.limit, offset: 0 }
+    );
+    if (stored.items.length > 0) {
+      res.json({
+        items: stored.items,
+        total: stored.total,
+        limit: query.limit,
+        offset: 0,
+      });
+      return;
+    }
+
     const result = await newsService.listFromProvider(tickers, query.limit);
     res.json({
       items: result.items,

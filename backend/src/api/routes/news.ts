@@ -2,32 +2,44 @@ import type { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../../common/utils/asyncHandler.js';
 import { validate } from '../middlewares/validate.http.js';
-import { IMPACT_CATEGORIES, IMPACT_TYPES } from '../../models/News.js';
+import { IMPACT_CATEGORIES, IMPACT_DIRECTIONS } from '../../models/News.js';
 import * as newsController from '../controllers/news.controller.js';
 
 const impactCategoryEnum = z.enum(IMPACT_CATEGORIES as unknown as [string, ...string[]]);
-const impactTypeEnum = z.enum(IMPACT_TYPES as unknown as [string, ...string[]]);
+const impactDirectionEnum = z.enum(IMPACT_DIRECTIONS as unknown as [string, ...string[]]);
 
 const createNewsSchema = z.object({
+  url_hash: z.string().length(64).trim(),
   url: z.string().url().trim(),
-  title: z.string().min(1).trim(),
+  canonical_url: z.string().url().trim(),
+  headline: z.string().min(1).trim(),
   publishedAt: z.coerce.date(),
   source: z.string().trim().optional(),
   tickers: z.array(z.string().trim()).default([]),
-  aiSummary: z.string().default(''),
-  impactCategory: impactCategoryEnum.default('none'),
-  impactType: impactTypeEnum.default('mixed'),
+  impact: z.number().int().min(1).max(10),
+  direction: impactDirectionEnum,
+  category: impactCategoryEnum,
+  points: z.array(z.string().min(1)).min(3).max(6),
+  confidence: z.number().min(0).max(1),
+  model: z.string().min(1).trim(),
+  prompt_version: z.string().min(1).trim(),
 });
 
 const updateNewsSchema = z.object({
+  url_hash: z.string().length(64).trim().optional(),
   url: z.string().url().trim().optional(),
-  title: z.string().min(1).trim().optional(),
+  canonical_url: z.string().url().trim().optional(),
+  headline: z.string().min(1).trim().optional(),
   publishedAt: z.coerce.date().optional(),
   source: z.string().trim().optional().nullable(),
   tickers: z.array(z.string().trim()).optional(),
-  aiSummary: z.string().optional(),
-  impactCategory: impactCategoryEnum.optional(),
-  impactType: impactTypeEnum.optional(),
+  impact: z.number().int().min(1).max(10).optional(),
+  direction: impactDirectionEnum.optional(),
+  category: impactCategoryEnum.optional(),
+  points: z.array(z.string().min(1)).min(3).max(6).optional(),
+  confidence: z.number().min(0).max(1).optional(),
+  model: z.string().min(1).trim().optional(),
+  prompt_version: z.string().min(1).trim().optional(),
 });
 
 const listQuerySchema = z.object({
